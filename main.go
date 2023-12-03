@@ -19,6 +19,12 @@ func main() {
 		log.Fatal("Failed to create AWS session:", err)
 	}
 
+	createEc2(sess)
+	createS3(sess)
+	createDynamoDb(sess)
+}
+
+func createEc2(sess *session.Session) {
 	ec2Svc := ec2.New(sess)
 	ec2Instance, err := ec2Svc.RunInstances(&ec2.RunInstancesInput{
 		ImageId:      aws.String("your_ami"),
@@ -31,9 +37,12 @@ func main() {
 	}
 	fmt.Println("EC2 Instance ID:", *ec2Instance.Instances[0].InstanceId)
 
+}
+
+func createS3(sess *session.Session) {
 	s3Svc := s3.New(sess)
 	bucketName := "your_bucket"
-	_, err = s3Svc.CreateBucket(&s3.CreateBucketInput{
+	_, err := s3Svc.CreateBucket(&s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
 	})
 	if err != nil {
@@ -41,9 +50,12 @@ func main() {
 	}
 	fmt.Println("S3 Bucket created:", bucketName)
 
+}
+
+func createDynamoDb(sess *session.Session) {
 	dynamoDBSvc := dynamodb.New(sess)
 	tableName := "YourTable"
-	_, err = dynamoDBSvc.CreateTable(&dynamodb.CreateTableInput{
+	_, err := dynamoDBSvc.CreateTable(&dynamodb.CreateTableInput{
 		TableName: aws.String(tableName),
 		KeySchema: []*dynamodb.KeySchemaElement{
 			{
